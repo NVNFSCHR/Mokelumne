@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mokelumne-ingress
+  namespace: mokelumne
+spec:
+  rules:
+  - host: api.local
+    http:
+      paths:
+      - path: /images
+        pathType: Prefix
+        backend:
+          service:
+            name: image-service
+            port:
+              number: 4000
+      - path: /products
+        pathType: Prefix
+        backend:
+          service:
+            name: product-service
+            port:
+              number: 3000

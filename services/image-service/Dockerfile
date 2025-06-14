@@ -19,7 +19,7 @@ COPY . .
 # Baue TypeScript (falls du tsc verwendest)
 RUN npm run build
 
-EXPOSE 3000
+EXPOSE 4000
 
 # Starte die App
 CMD ["npm", "start"]
