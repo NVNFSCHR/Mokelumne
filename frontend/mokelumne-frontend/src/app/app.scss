@@ -1,0 +1,39 @@
+.navbar-home {
+  position: fixed;
+  width: 100%;
+  z-index: 2000;
+}
+
+.home-view-1-container {
+  padding-top: 110px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.home-view-2-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.home-view-2-horizontal-container {
+  width: 100%;
+  display: flex;
+  gap: 10px;
+}
+
+@media (max-width: 1095px) {
+  .home-view-1-container {
+    padding-top: 110px;
+  }
+
+  .home-view-2-container {
+    flex-direction: column;
+  }
+
+  .home-view-2-horizontal-container {
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,27 @@
+<div>
+
+  <app-navbar class="navbar-home"></app-navbar>
+
+  <div class="home-view-1-container">
+
+    <app-home-view-1 *ngIf="products.length > 0" [product]="products[0]"></app-home-view-1>
+
+    <app-home-view-1 *ngIf="products.length > 1" [product]="products[1]"></app-home-view-1>
+
+    <div class="home-view-2-container">
+
+      <div class="home-view-2-horizontal-container">
+        <app-home-view-2 *ngIf="products.length > 3" [product]="products[1]"></app-home-view-2>
+        <app-home-view-2 *ngIf="products.length > 3" [product]="products[1]"></app-home-view-2>
+      </div>
+      <div class="home-view-2-horizontal-container">
+        <app-home-view-2 *ngIf="products.length > 5" [product]="products[1]"></app-home-view-2>
+        <app-home-view-2 *ngIf="products.length > 5" [product]="products[1]"></app-home-view-2>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
