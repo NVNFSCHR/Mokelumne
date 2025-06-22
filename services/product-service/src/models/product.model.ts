@@ -6,4 +6,5 @@ export interface Product {
   images: string[];
   price: number;
   stock: number;
+  display_rank: number;
 }
