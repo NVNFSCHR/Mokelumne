@@ -9,7 +9,7 @@ const app = express();
 const port = process.env.PORT || 4000;
 
 app.use(express.json());
-app.use('/api', imageRoutes); // optional
+app.use('/api/images/', imageRoutes); // optional
 
 app.get('/', (req, res) => {
   res.send('Image Service is running');

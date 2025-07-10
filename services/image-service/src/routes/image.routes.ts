@@ -8,7 +8,7 @@ import { ObjectId } from 'mongodb';
 const router = express.Router();
 const upload = multer({ dest: 'uploads/' });
 
-router.post('/', upload.single('image'), (req, res, next) => {
+router.post('/upload', upload.single('image'), (req, res, next) => {
   (async () => {
     if (!req.file) return res.status(400).send('No file uploaded');
 

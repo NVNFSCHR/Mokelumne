@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject,ChangeDetectorRef } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import {CommonModule} from '@angular/common';
 
@@ -12,10 +12,11 @@ import {HomeView2} from './home-view-2/home-view-2';
   selector: 'app-root',
   imports: [CommonModule, RouterOutlet, Navbar, HomeView1, HomeView2],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrls: ['./app.scss']
 })
 export class App implements OnInit {
   private HomeViewService = inject(HomeView);
+  private cdr = inject(ChangeDetectorRef);
   products: Product[] = [];
 
   ngOnInit() {
@@ -23,6 +24,7 @@ export class App implements OnInit {
       // data ist bereits ein Array, nicht data.products
       this.products = data;
       console.log('Products:', this.products);
+      this.cdr.detectChanges();
     });
   }
 }

@@ -15,14 +15,14 @@ spec:
             name: frontend
             port:
               number: 80
-      - path: /images
+      - path: /api/images
         pathType: Prefix
         backend:
           service:
             name: image-service
             port:
               number: 4000
-      - path: /products
+      - path: /api/products
         pathType: Prefix
         backend:
           service:

@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
-app.use('/products', productRoutes);
+app.use('/api/products', productRoutes);
 
 (async () => {
   await connectDB(); // ⬅ Verbindung aufbauen
