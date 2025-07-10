@@ -21,6 +21,6 @@ export class HomeView {
   constructor(private http: HttpClient) { }
 
   getHomeViewData(): Observable<any> {
-    return this.http.get<any>("http://localhost:3000/products");
+    return this.http.get<any>("http://product-service:3000/products");
   }
 }

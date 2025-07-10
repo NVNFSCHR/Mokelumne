@@ -5,9 +5,16 @@ metadata:
   namespace: mokelumne
 spec:
   rules:
-  - host: api.local
+  - host: localhost
     http:
       paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend
+            port:
+              number: 80
       - path: /images
         pathType: Prefix
         backend:

@@ -22,7 +22,7 @@ export class HomeView1 implements OnChanges {
       this.subtitle = this.product.subtitle;
       this.description = this.product.description;
       this.price = this.product.price;
-      this.imageUrl = "http://localhost:4000/api/images/" + this.product?.images?.[0];
+      this.imageUrl = "http://image-service:4000/api/" + this.product?.images?.[0];
     }
   }
 }
