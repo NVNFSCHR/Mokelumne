@@ -4,6 +4,7 @@
 echo "Baue Docker Images..."
 docker build -t image-service:latest ./services/image-service
 docker build -t product-service:latest ./services/product-service
+docker build -t user-service:latest ./services/user-service
 docker build -t mokelumne-frontend:latest ./frontend/mokelumne-frontend
 
 # Cluster erstellen oder neu erstellen
@@ -19,6 +20,7 @@ kind create cluster --config kind-config.yaml
 echo "Lade Docker Images in den Cluster..."
 kind load docker-image image-service:latest --name mokelumne-cluster
 kind load docker-image product-service:latest --name mokelumne-cluster
+kind load docker-image user-service:latest --name mokelumne-cluster
 kind load docker-image mokelumne-frontend:latest --name mokelumne-cluster
 
 # Zuerst den Ingress-Controller installieren
@@ -35,6 +37,7 @@ kubectl wait --namespace ingress-nginx \
 # Jetzt erst die Kubernetes Ressourcen erstellen
 echo "Erstelle Kubernetes Ressourcen..."
 kubectl apply -f k8s/namespaces/
+kubectl apply -f k8s/secrets/
 kubectl apply -f k8s/storage/
 kubectl apply -f k8s/mongo/
 kubectl apply -f k8s/services/
@@ -51,5 +54,6 @@ kubectl patch ingress mokelumne-ingress -n mokelumne --type=json -p='[{"op": "ad
 echo "Kubernetes-Setup abgeschlossen!"
 echo "Dienste sind unter folgenden URLs erreichbar:"
 echo "- Image-Service: http://localhost/api/images"
+echo "- User-Service: http://localhost/api/user"
 echo "- Product-Service: http://localhost/api/products"
 echo "- Frontend: http://localhost/"

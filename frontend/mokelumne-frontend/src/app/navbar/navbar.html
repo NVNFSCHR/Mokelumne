@@ -9,6 +9,36 @@
       <h2>Über uns</h2>
     </div>
 
-    <button class="login">Anmelden</button>
+    @if (authService.authState$ | async; as user) {
+      <!-- Avatar mit Dropdown -->
+      <div class="user-menu" (click)="toggleDropdown()" [class.open]="isDropdownOpen">
+        <div class="user-avatar">
+          {{ getUserInitials(user) }}
+        </div>
+
+        <div class="dropdown-menu" [class.show]="isDropdownOpen">
+          <!-- Zeige Admin Panel für Admins, sonst Profil -->
+          @if (userService.isAdmin()) {
+            <div class="dropdown-item" (click)="viewAdminPanel()">
+              <span>Verwaltung</span>
+            </div>
+          } @else {
+            <div class="dropdown-item" (click)="viewProfile()">
+              <span>Profil ansehen</span>
+            </div>
+          }
+          <div class="dropdown-item" (click)="viewSettings()">
+            <span>Einstellungen</span>
+          </div>
+          <div class="dropdown-divider"></div>
+          <div class="dropdown-item logout" (click)="logout()">
+            <span>Abmelden</span>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <!-- Wenn nicht angemeldet: Anmelden-Button anzeigen -->
+      <button class="login" (click)="navigateToLogin()">Anmelden</button>
+    }
   </div>
 </div>

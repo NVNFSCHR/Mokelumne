@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  namespace: mokelumne
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+      - name: user-service
+        image: user-service:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 3000
+        env:
+        - name: MONGO_URI
+          value: mongodb://mongo-user:27017/mokelumne
+        envFrom:
+        - secretRef:
+            name: firebase-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+  namespace: mokelumne
+spec:
+  selector:
+    app: user-service
+  ports:
+  - port: 3000
+    targetPort: 3000

@@ -1,38 +1,7 @@
 <div>
+  @if (router.url !== '/login' && router.url !== '/register') {
+    <app-navbar class="navbar-home"></app-navbar>
+  }
+
   <router-outlet></router-outlet>
-  <app-navbar class="navbar-home"></app-navbar>
-
-  <div class="home-view-1-container">
-
-    @if (products.length > 0) {
-      <app-home-view-1 [product]="products[0]"></app-home-view-1>
-    }
-
-    @if (products.length > 1) {
-      <app-home-view-1 [product]="products[1]"></app-home-view-1>
-    }
-
-    <div class="home-view-2-container">
-
-      <div class="home-view-2-horizontal-container">
-        @if (products.length > 3) {
-          <app-home-view-2 [product]="products[2]"></app-home-view-2>
-        }
-        @if (products.length > 3) {
-          <app-home-view-2 [product]="products[3]"></app-home-view-2>
-        }
-      </div>
-      <div class="home-view-2-horizontal-container">
-        @if (products.length > 5) {
-          <app-home-view-2 [product]="products[4]"></app-home-view-2>
-        }
-        @if (products.length > 5) {
-          <app-home-view-2 [product]="products[5]"></app-home-view-2>
-        }
-      </div>
-
-    </div>
-
-  </div>
-
 </div>

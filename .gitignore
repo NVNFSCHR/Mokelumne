@@ -36,6 +36,7 @@ yarn-error.log
 /libpeerconnection.log
 testem.log
 /typings
+/services/user-service/serviceAccountKey.json
 
 # System files
 .DS_Store

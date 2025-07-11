@@ -1,13 +1,13 @@
-import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
-import {Product} from '../services/home-view';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Product } from '../../services/home-view';
 
 @Component({
-  selector: 'app-home-view-2',
+  selector: 'app-home-view-1',
   imports: [],
-  templateUrl: './home-view-2.html',
-  styleUrl: './home-view-2.scss'
+  templateUrl: './home-view-1.html',
+  styleUrls: ['./home-view-1.scss'],
 })
-export class HomeView2 implements OnChanges {
+export class HomeView1 implements OnChanges {
   @Input() product?: Product;
 
   protected title?: string;
