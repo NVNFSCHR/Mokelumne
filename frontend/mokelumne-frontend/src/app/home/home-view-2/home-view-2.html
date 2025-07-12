@@ -1,13 +1,13 @@
-<div class="home-view-2- container">
+<div class="home-view-1-container" [style.backgroundImage]="'url(' + imageUrl + ')'">
 
   <div class="product-info">
 
-    <h1 class="home-view-2-title">Produkt A</h1>
-    <h2 class="home-view-2-subtitle">Untertitel/Kurzbeschreibung</h2>
+    <h1 class="home-view-1-title">{{ title }}</h1>
+    <h2 class="home-view-1-subtitle">{{ subtitle }}</h2>
 
     <div class="info-btn-container">
-      <button class="info-btn">Mehr erfahren</button>
-      <button class="buy-btn">Jetzt kaufen</button>
+      <button class="info-btn" (click)="navigateToProduct()">Mehr erfahren</button>
+      <button class="buy-btn" (click)="addToCart()">Jetzt kaufen</button>
     </div>
 
   </div>

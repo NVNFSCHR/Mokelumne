@@ -44,6 +44,10 @@ export class Navbar {
     return 'U';
   }
 
+  navigateToHome() {
+    this.router.navigate(['/']);
+  }
+
   navigateToLogin(): void {
     this.router.navigate(['/login']);
   }
@@ -66,5 +70,8 @@ export class Navbar {
   logout(): void {
     this.isDropdownOpen = false;
     this.authService.logout();
+  }
+  navigateToCart() {
+    this.router.navigate(['/cart']);
   }
 }

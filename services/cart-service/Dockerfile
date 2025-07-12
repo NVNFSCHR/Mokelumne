@@ -4,16 +4,20 @@ FROM node:20-alpine
 # Arbeitsverzeichnis im Container
 WORKDIR /app
 
-# Installiere Abhängigkeiten
+# Kopiere package files
 COPY package*.json ./
+COPY tsconfig.json ./
+
+# Installiere alle dependencies inkl. dev dependencies
 RUN npm install
 
-# Kopiere den Quellcode
-COPY . .
+# Kopiere source code
+COPY src/ ./src/
 
-# Baue TypeScript (falls du tsc verwendest)
+# Baue TypeScript
 RUN npm run build
 
+# Expose Port 3000
 EXPOSE 3000
 
 # Starte die App

@@ -36,3 +36,10 @@ spec:
             name: product-service
             port:
               number: 3000
+      - path: /api/cart
+        pathType: Prefix
+        backend:
+          service:
+            name: cart-service
+            port:
+              number: 3000

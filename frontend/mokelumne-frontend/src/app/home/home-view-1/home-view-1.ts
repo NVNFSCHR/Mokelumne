@@ -1,14 +1,23 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, inject } from '@angular/core';
 import { Product } from '../../services/home-view';
+import { Router, RouterModule } from '@angular/router';
+import { CartService } from '../../services/cart';
 
 @Component({
   selector: 'app-home-view-1',
-  imports: [],
+  imports: [RouterModule],
+  standalone: true,
   templateUrl: './home-view-1.html',
   styleUrls: ['./home-view-1.scss'],
 })
 export class HomeView1 implements OnChanges {
   @Input() product?: Product;
+
+  quantity: number = 1;
+  isAddingToCart: boolean = false;
+
+  private router = inject(Router);
+  private cartService = inject(CartService);
 
   protected title?: string;
   protected subtitle?: string;
@@ -25,4 +34,23 @@ export class HomeView1 implements OnChanges {
       this.imageUrl = "/api/images/" + this.product?.images?.[0];
     }
   }
+    navigateToProduct() {
+    this.router.navigate(['/product', this.product?.id]);
+  }
+    addToCart() {
+      if (!this.product || this.isAddingToCart) return;
+
+      this.isAddingToCart = true;
+      this.cartService.addItem(this.product.id.toString(), this.quantity).subscribe({
+        next: (response) => {
+          console.log('Erfolgreich zum Warenkorb hinzugefügt:', response);
+          this.isAddingToCart = false;
+          this.router.navigate(['/cart']);
+        },
+        error: (error) => {
+          console.error('Fehler beim Hinzufügen zum Warenkorb:', error);
+          this.isAddingToCart = false;
+        }
+      });
+    }
 }

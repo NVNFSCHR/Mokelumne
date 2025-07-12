@@ -52,8 +52,33 @@
 
 .user-menu {
   position: absolute;
-  right: 35px;
+  right: 30px;
   cursor: pointer;
+}
+
+.navbar-actions {
+  position: absolute;
+  right: 120px;
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Abstand zwischen Cart und Avatar */
+}
+
+.cart {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+
+  .cart-image {
+    width: 24px;
+    height: 24px;
+  }
+
+  .cart-count {
+    font-size: 12px;
+    color: black;
+    margin-left: 5px;
+  }
 }
 
 .user-avatar {

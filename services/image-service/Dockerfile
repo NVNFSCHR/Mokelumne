@@ -1,10 +1,5 @@
-FROM ubuntu:latest
-LABEL authors="navinfischer"
-
-ENTRYPOINT ["top", "-b"]
-
 # Base image
-FROM node:20
+FROM node:20-alpine
 
 # Arbeitsverzeichnis im Container
 WORKDIR /app

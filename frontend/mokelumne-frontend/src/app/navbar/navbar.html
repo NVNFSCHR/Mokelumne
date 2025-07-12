@@ -1,12 +1,18 @@
 <div>
   <div class="navbar-container">
 
-    <h1>Mokelumne</h1>
+    <h1 (click)="navigateToHome()">Mokelumne</h1>
 
     <div class="navbar-links">
       <h2>Einkaufen</h2>
       <h2>Support</h2>
       <h2>Über uns</h2>
+    </div>
+
+    <div class="navbar-actions">
+      <button class="cart" (click)="navigateToCart()">
+        <img src="assets/cart-icon.png" alt="Einkaufswagen" class="cart-image" />
+      </button>
     </div>
 
     @if (authService.authState$ | async; as user) {

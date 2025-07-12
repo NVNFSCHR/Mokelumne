@@ -13,11 +13,29 @@ export class HttpUserService {
   private currentUserSubject = new BehaviorSubject<UserProfile | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
+  getAuth(): Auth {
+    return this.auth;
+  }
+
   async loadUser(): Promise<UserProfile | null> {
     try {
-      const token = await this.auth.currentUser?.getIdToken();
-      if (!token) return null;
+      // Auf Auth-Status warten
+      await new Promise<void>((resolve) => {
+        const unsubscribe = this.auth.onAuthStateChanged((user) => {
+          unsubscribe();
+          resolve();
+        });
+      });
 
+      const currentUser = this.auth.currentUser;
+
+      if (!currentUser) {
+        console.log('Kein angemeldeter Benutzer gefunden');
+        this.currentUserSubject.next(null);
+        return null;
+      }
+
+      const token = await currentUser.getIdToken();
       const headers = { Authorization: `Bearer ${token}` };
 
       const backendUser = await firstValueFrom(
@@ -35,9 +53,11 @@ export class HttpUserService {
       };
 
       this.currentUserSubject.next(userProfile);
+      console.log('Benutzer erfolgreich geladen:', userProfile.email);
       return userProfile;
     } catch (error) {
       console.error('Fehler beim Laden des Benutzers:', error);
+      this.currentUserSubject.next(null);
       return null;
     }
   }

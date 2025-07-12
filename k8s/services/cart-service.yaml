@@ -1,27 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: user-service
+  name: cart-service
   namespace: mokelumne
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: user-service
+      app: cart-service
   template:
     metadata:
       labels:
-        app: user-service
+        app: cart-service
     spec:
       containers:
-      - name: user-service
-        image: user-service:latest
+      - name: cart-service
+        image: cart-service:latest
         imagePullPolicy: Never
         ports:
         - containerPort: 3000
         env:
         - name: MONGO_URI
-          value: mongodb://mongo-user:27017
+          value: mongodb://mongo-cart:27017
         envFrom:
         - secretRef:
             name: firebase-secret
@@ -29,11 +29,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: user-service
+  name: cart-service
   namespace: mokelumne
 spec:
   selector:
-    app: user-service
+    app: cart-service
   ports:
   - port: 3000
     targetPort: 3000
