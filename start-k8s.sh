@@ -6,6 +6,8 @@ docker build -t image-service:latest ./services/image-service
 docker build -t product-service:latest ./services/product-service
 docker build -t user-service:latest ./services/user-service
 docker build -t cart-service:latest ./services/cart-service
+docker build -t order-service:latest ./services/order-service
+docker build -t payment-service:latest ./services/payment-service
 docker build -t mokelumne-frontend:latest ./frontend/mokelumne-frontend
 
 # Cluster erstellen oder neu erstellen
@@ -23,6 +25,8 @@ kind load docker-image image-service:latest --name mokelumne-cluster
 kind load docker-image product-service:latest --name mokelumne-cluster
 kind load docker-image user-service:latest --name mokelumne-cluster
 kind load docker-image cart-service:latest --name mokelumne-cluster
+kind load docker-image order-service:latest --name mokelumne-cluster
+kind load docker-image payment-service:latest --name mokelumne-cluster
 kind load docker-image mokelumne-frontend:latest --name mokelumne-cluster
 
 # Zuerst den Ingress-Controller installieren
@@ -59,4 +63,6 @@ echo "- Image-Service: http://localhost/api/images"
 echo "- User-Service: http://localhost/api/user"
 echo "- Product-Service: http://localhost/api/products"
 echo "- Cart-Service: http://localhost/api/cart"
+echo "- Order-Service: http://localhost/api/order"
+echo "- Payment-Service: http://localhost/api/pay"
 echo "- Frontend: http://localhost/"

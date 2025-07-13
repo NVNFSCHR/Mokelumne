@@ -4,7 +4,10 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IUser extends Document {
   firebaseUid: string;
   email: string;
-  name?: string;
+  title?: 'Herr' | 'Frau' | 'Divers' | 'Dr.' | '';
+  name?: string; // Optional combined name field
+  first_name?: string;
+  last_name?: string;
   role: 'customer' | 'admin';
   address?: {
     street?: string;
@@ -18,7 +21,10 @@ export interface IUser extends Document {
 const UserSchema = new Schema({
   firebaseUid: { type: String, required: true, unique: true },
   email: { type: String, required: true },
-  name: { type: String },
+  title: { type: String, enum: ['Herr', 'Frau', 'Divers', 'Dr.', ''], default: '' },
+  name: { type: String, default: '' }, // Optional combined name field
+  first_name: { type: String },
+  last_name: { type: String },
   role: { type: String, enum: ['customer', 'admin'], default: 'customer' },
   address: {
     street: String,

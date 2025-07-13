@@ -7,6 +7,7 @@ import { AdminPanelComponent } from './admin-panel/admin-panel';
 import { ManageProducts } from './manage-products/manage-products';
 import { ProductOverview } from './product-overview/product-overview';
 import { Cart } from './cart/cart';
+import { CheckOut } from './check-out/check-out';
 import { authGuard } from './auth-guard';
 import { adminGuard } from './admin-guard';
 
@@ -14,6 +15,7 @@ export const routes: Routes = [
   { path: '', component: Home },
   { path: 'product/:id', component: ProductOverview},
   { path: 'cart', component: Cart},
+  { path: 'check-out', component: CheckOut },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'manage', component: AdminPanelComponent, canActivate: [adminGuard] },

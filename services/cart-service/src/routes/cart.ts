@@ -25,6 +25,22 @@ router.put('/', authenticate, async (req, res) => {
   res.json(updated);
 });
 
+// DELETE /api/cart (kompletten Warenkorb leeren)
+router.delete('/', authenticate, async (req, res) => {
+  const { uid } = (req as any).user;
+
+  const cart = await Cart.findOne({ userId: uid });
+  if (!cart) {
+    return res.json({ items: [] }); // Bereits leer
+  }
+
+  cart.items = [];
+  cart.updatedAt = new Date();
+  await cart.save();
+
+  res.json(cart);
+});
+
 // DELETE /api/cart/:productId
 router.delete('/:productId', authenticate, async (req, res) => {
   const { uid } = (req as any).user;

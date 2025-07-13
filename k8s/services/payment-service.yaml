@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-service
+  namespace: mokelumne
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment-service
+  template:
+    metadata:
+      labels:
+        app: payment-service
+    spec:
+      containers:
+      - name: payment-service
+        image: payment-service:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 4000
+        env:
+          - name: WEBHOOK_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: webhook-secret
+                key: WEBHOOK_SECRET
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-service
+  namespace: mokelumne
+spec:
+  selector:
+    app: payment-service
+  ports:
+  - port: 4000
+    targetPort: 4000

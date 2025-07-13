@@ -50,11 +50,11 @@ router.get('/admin-area', authenticate, async (req, res) => {
 // Update eigener Profildaten
 router.put('/me', authenticate, async (req, res) => {
   const { uid } = (req as any).user;
-  const { name, phoneNumber, address } = req.body;
+  const { title, name, first_name, last_name, phoneNumber, address } = req.body;
 
   const user = await User.findOneAndUpdate(
     { firebaseUid: uid },
-    { $set: { name, phoneNumber, address } },
+    { $set: { title, name, first_name, last_name, phoneNumber, address } },
     { new: true }
   );
 

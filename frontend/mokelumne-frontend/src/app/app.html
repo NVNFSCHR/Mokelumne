@@ -1,5 +1,5 @@
 <div>
-  @if (router.url !== '/login' && router.url !== '/register') {
+  @if (router.url !== '/login' && router.url !== '/register' && !router.url.includes('returnUrl')) {
     <app-navbar class="navbar-home"></app-navbar>
   }
 
