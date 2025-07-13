@@ -1,7 +1,12 @@
-<div>
+<div class="app-container">
   @if (router.url !== '/login' && router.url !== '/register' && !router.url.includes('returnUrl')) {
     <app-navbar class="navbar-home"></app-navbar>
   }
 
-  <router-outlet></router-outlet>
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+
+  <app-footer></app-footer>
+
 </div>

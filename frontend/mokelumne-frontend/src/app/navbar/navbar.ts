@@ -74,4 +74,10 @@ export class Navbar {
   navigateToCart() {
     this.router.navigate(['/cart']);
   }
+  navigateToAllProducts() {
+    this.router.navigate(['/discover']);
+  }
+  navigateToAboutUs() {
+    this.router.navigate(['/about-us']);
+  }
 }

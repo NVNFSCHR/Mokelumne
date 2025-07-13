@@ -1,7 +1,7 @@
 #!/bin/bash
 
-docker build -t user-service:latest ./services/user-service
+docker build -t order-service:latest ./services/order-service
 
-kind load docker-image user-service:latest --name mokelumne-cluster
+kind load docker-image order-service:latest --name mokelumne-cluster
 
-kubectl rollout restart deployment user-service -n mokelumne
+kubectl rollout restart deployment order-service -n mokelumne

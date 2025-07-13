@@ -10,6 +10,12 @@ router.get('/', async (req, res) => {
   res.json(methods);
 });
 
+router.get('/:key', async (req, res) => {
+  const method = await ShippingMethod.findOne({ key: req.params.key });
+  if (!method) return res.status(404).json({ message: 'Versandmethode nicht gefunden' });
+  res.json(method);
+});
+
 // Admin-only - Versandmethode erstellen
 router.post('/', authenticate, async (req, res) => {
   const { role } = (req as any).user;

@@ -1,9 +1,9 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IOrder extends Document {
-  userId: string;
+  userId?: string;
   products: { productId: string; quantity: number }[];
-  deliveryType: 'standard' | 'express';
+  deliveryType: string
   contact: {
     email: string;
     phoneNumber: string;
@@ -29,6 +29,7 @@ export interface IOrder extends Document {
   };
   status: 'open' | 'paid' | 'shipped';
   createdAt: Date;
+  totalAmount?: number; // Optional, falls benötigt
 }
 
 
@@ -40,7 +41,6 @@ const OrderSchema = new Schema<IOrder>({
   }],
   deliveryType: {
     type: String,
-    enum: ['standard', 'express'],
     required: true
   },
   contact: {
@@ -67,7 +67,8 @@ const OrderSchema = new Schema<IOrder>({
     dueDate: Date
   },
   status: { type: String, enum: ['open', 'paid', 'shipped'], default: 'open' },
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
+  totalAmount: { type: Number, required: false } // Optional, falls benötigt
 });
 
 

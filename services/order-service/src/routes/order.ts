@@ -2,12 +2,14 @@ import express from 'express';
 import { authenticate } from '../middleware/authenticate';
 import { Order } from '../models/Order';
 import { Coupon } from '../models/Coupon';
-
+import mongoose from 'mongoose';
+import axios from 'axios';
 const router = express.Router();
 
 // Bestellung erstellen
 router.post('/', async (req, res) => {
   const {
+    userId,
     products,
     deliveryType,
     shippingAddress,
@@ -21,7 +23,7 @@ router.post('/', async (req, res) => {
 
     for (const item of products) {
       try {
-        const response = await fetch(`http://product-service:3000/api/products/${item.productId}`);
+        const response = await fetch(`http://product-service.mokelumne.svc.cluster.local:3000/api/products/${item.productId}`);
 
         if (!response.ok) {
           throw new Error(`Produkt ${item.productId} nicht gefunden`);
@@ -63,10 +65,25 @@ router.post('/', async (req, res) => {
     await coupon.save();
   }
 
-  const finalAmount = totalWithoutDiscount - discountAmount;
+  async function getShippingPrice(deliveryType: string): Promise<number> {
+    try {
+      const response = await axios.get(`http://order-service.mokelumne.svc.cluster.local:3000/api/shipping-methods/${deliveryType}`);
+      if (response.status !== 200) {
+        throw new Error('Versandmethode nicht gefunden');
+      }
+      return response.data.price;
+    } catch (error) {
+      console.error('Fehler beim Abrufen der Versandkosten:', error);
+      throw new Error('Versandkosten konnten nicht abgerufen werden');
+    }
+  }
+
+
+  const finalAmount = totalWithoutDiscount - discountAmount + await getShippingPrice(deliveryType);
+
 
   const newOrder = new Order({
-    userId: null, // Benutzer-ID wird nicht mehr benötigt
+    userId: userId,
     products,
     deliveryType,
     shippingAddress,
@@ -82,13 +99,13 @@ router.post('/', async (req, res) => {
   });
 
   await newOrder.save();
+
   res.status(201).json(newOrder);
 });
 
-
-
 // Eigene Bestellungen anzeigen
 router.get('/me', authenticate, async (req, res) => {
+  console.log(req)
   const { uid } = (req as any).user;
   const orders = await Order.find({ userId: uid });
   res.json(orders);
@@ -103,7 +120,48 @@ router.get('/', authenticate, async (req, res) => {
   res.json(orders);
 });
 
-// Status aktualisieren
+// Bestellungen suchen (Admin-only)
+router.get('/search', authenticate, async (req, res) => {
+  try {
+    const { search, dateFrom, dateTo, status } = req.query;
+    const query: any = {};
+
+    if (search && typeof search === 'string') {
+      const searchRegex = new RegExp(search, 'i');
+      query.$or = [
+        { 'contact.email': searchRegex },
+        { 'shippingAddress.lastName': searchRegex }
+      ];
+      if (mongoose.Types.ObjectId.isValid(search)) {
+        query.$or.push({ _id: new mongoose.Types.ObjectId(search) });
+      }
+    }
+
+    if (dateFrom || dateTo) {
+      query.createdAt = {};
+      if (dateFrom && typeof dateFrom === 'string') {
+        query.createdAt.$gte = new Date(dateFrom);
+      }
+      if (dateTo && typeof dateTo === 'string') {
+        const endDate = new Date(dateTo);
+        endDate.setHours(23, 59, 59, 999);
+        query.createdAt.$lte = endDate;
+      }
+    }
+
+    if (status && typeof status === 'string') {
+      query.status = status;
+    }
+
+    const orders = await Order.find(query).sort({ createdAt: -1 });
+    res.json(orders);
+  } catch (error) {
+    console.error('Fehler bei der Bestellsuche:', error);
+    res.status(500).send('Serverfehler bei der Bestellsuche');
+  }
+});
+
+// Bestellstatus aktualisieren (Admin-only)
 router.patch('/:id/status', authenticate, async (req, res) => {
   const { role } = (req as any).user;
   if (role !== 'admin') return res.status(403).send('Forbidden');
@@ -113,17 +171,24 @@ router.patch('/:id/status', authenticate, async (req, res) => {
     return res.status(400).send('Ungültiger Status');
   }
 
-  // PATCH /orders/:id/payment
+  const order = await Order.findByIdAndUpdate(
+    req.params.id,
+    { status },
+    { new: true }
+  );
+
+  if (!order) return res.status(404).send('Bestellung nicht gefunden');
+  res.json(order);
+});
+
+// Zahlungsstatus aktualisieren (Webhook/Admin)
 router.patch('/:id/payment', authenticate, async (req, res) => {
   const { role } = (req as any).user;
   const secret = req.headers['x-webhook-secret'];
 
-  if (role !== 'admin') {
-    return res.status(403).send('Forbidden');
-  }
-
-  if (secret !== process.env.WEBHOOK_SECRET) {
-    return res.status(403).send('Invalid Webhook Secret');
+  // Erlaube Zugriff für Admins oder über einen sicheren Webhook
+  if (role !== 'admin' && secret !== process.env.WEBHOOK_SECRET) {
+    return res.status(403).send('Forbidden: Invalid credentials or webhook secret');
   }
 
   const { status } = req.body;
@@ -142,14 +207,25 @@ router.patch('/:id/payment', authenticate, async (req, res) => {
   res.json(order);
 });
 
-  const order = await Order.findByIdAndUpdate(
-    req.params.id,
-    { status },
-    { new: true }
-  );
+// Bestellung löschen (Admin-only)
+router.delete('/:id', authenticate, async (req, res) => {
+  // @ts-ignore
+  if (req.user.role !== 'admin') {
+    return res.status(403).send('Zugriff verweigert: Nur für Administratoren.');
+  }
 
-  if (!order) return res.status(404).send('Bestellung nicht gefunden');
-  res.json(order);
+  try {
+    const order = await Order.findByIdAndDelete(req.params.id);
+
+    if (!order) {
+      return res.status(404).send('Bestellung nicht gefunden.');
+    }
+
+    res.status(200).json({ message: 'Bestellung erfolgreich gelöscht.' });
+  } catch (error) {
+    console.error('Fehler beim Löschen der Bestellung:', error);
+    res.status(500).send('Serverfehler beim Löschen der Bestellung.');
+  }
 });
 
 export default router;

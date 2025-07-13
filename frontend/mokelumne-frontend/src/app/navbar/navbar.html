@@ -4,9 +4,9 @@
     <h1 (click)="navigateToHome()">Mokelumne</h1>
 
     <div class="navbar-links">
-      <h2>Einkaufen</h2>
-      <h2>Support</h2>
-      <h2>Über uns</h2>
+      <h2 (click)="navigateToAllProducts()">Einkaufen</h2>
+      <h2 (click)="navigateToAboutUs()">Support</h2>
+      <h2 (click)="navigateToAboutUs()">Über uns</h2>
     </div>
 
     <div class="navbar-actions">
@@ -30,7 +30,7 @@
             </div>
           } @else {
             <div class="dropdown-item" (click)="viewProfile()">
-              <span>Profil ansehen</span>
+              <span>Bestellungen ansehen</span>
             </div>
           }
           <div class="dropdown-item" (click)="viewSettings()">

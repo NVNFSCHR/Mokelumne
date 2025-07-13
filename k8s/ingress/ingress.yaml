@@ -50,6 +50,20 @@ spec:
             name: order-service
             port:
               number: 3000
+      - path: /api/shipping-methods
+        pathType: Prefix
+        backend:
+          service:
+            name: order-service
+            port:
+              number: 3000
+      - path: /api/coupons
+        pathType: Prefix
+        backend:
+          service:
+            name: order-service
+            port:
+              number: 3000
       - path: /api/pay
         pathType: Prefix
         backend:
