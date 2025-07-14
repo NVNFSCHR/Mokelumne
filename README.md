@@ -74,9 +74,6 @@ Nachdem das Skript erfolgreich durchgelaufen ist, sind die Dienste unter den fol
 3. Umgebung stoppen
 Um den Kubernetes-Cluster und alle laufenden Container zu entfernen, führen Sie das Stop-Skript aus:
 
-3. Umgebung stoppen
-Um den Kubernetes-Cluster und alle laufenden Container zu entfernen, führen Sie das Stop-Skript aus:
-
 ```bash
 ./stop-k8s.sh
 ```
