@@ -24,6 +24,14 @@ spec:
           value: mongodb://mongo-product:27017
         - name: PORT
           value: "3000"
+        - name: INTERNAL_SECRET # Hinzugefügter Secret-Verweis
+          valueFrom:
+            secretKeyRef:
+              name: internal-secret # Name des erstellten Secrets
+              key: INTERNAL_SECRET
+        envFrom:
+          - secretRef:
+              name: firebase-secret
       volumes: []
 ---
 apiVersion: v1

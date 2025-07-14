@@ -155,43 +155,75 @@ router.patch('/:userId/role', authenticate, async (req, res) => {
   }
 });
 
-// Benutzer löschen (Admin-only)
+// DELETE /api/user/:userId - Benutzer löschen
 router.delete('/:userId', authenticate, async (req, res) => {
   const { uid } = (req as any).user;
-  const currentUser = await User.findOne({ firebaseUid: uid }) as IUser;
-
-  if (!currentUser || currentUser.role !== 'admin') {
-    return res.status(403).send('Forbidden: Admin access required');
-  }
+  const { userId } = req.params;
 
   try {
-    const { userId } = req.params;
-
-    if (userId === currentUser._id.toString()) {
-      return res.status(400).json({ message: 'Cannot delete your own account' });
+    // Aktuellen Benutzer aus der Datenbank laden
+    const currentUser = await User.findOne({ firebaseUid: uid });
+    if (!currentUser) {
+      return res.status(404).json({ error: 'Benutzer nicht gefunden' });
     }
 
-    // Erst den User aus MongoDB holen um firebaseUid zu bekommen
+    // User zu löschenden User laden
     const userToDelete = await User.findById(userId);
     if (!userToDelete) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ error: 'Zu löschender Benutzer nicht gefunden' });
     }
 
-    // Firebase User löschen
-    try {
-      await admin.auth().deleteUser(userToDelete.firebaseUid);
-      console.log(`Firebase user deleted: ${userToDelete.firebaseUid}`);
-    } catch (firebaseError) {
-      console.error('Error deleting Firebase user:', firebaseError);
-      // Optional: return error or continue with MongoDB deletion
+    // Berechtigung prüfen: Nur Admin oder der Benutzer selbst
+    const isAdmin = currentUser.role === 'admin';
+    const isSelfDelete = userId === currentUser._id.toString();
+
+    if (!isAdmin && !isSelfDelete) {
+      return res.status(403).json({ error: 'Nicht berechtigt' });
     }
 
-    // MongoDB User löschen
-    const deletedUser = await User.findByIdAndDelete(userId);
-    res.json({ message: 'User successfully deleted from both Firebase and database' });
+    // Bei Admin-Löschung durch anderen Admin: Prüfung ob letzter Admin
+    if (isAdmin && userToDelete.role === 'admin' && !isSelfDelete) {
+      const adminCount = await User.countDocuments({ role: 'admin' });
+      if (adminCount <= 1) {
+        return res.status(400).json({
+          error: 'Der letzte Administrator kann nicht gelöscht werden'
+        });
+      }
+    }
+
+    // Bei Selbstlöschung: Prüfung ob letzter Admin
+    if (isSelfDelete && currentUser.role === 'admin') {
+      const adminCount = await User.countDocuments({ role: 'admin' });
+      if (adminCount <= 1) {
+        return res.status(400).json({
+          error: 'Als letzter Administrator können Sie Ihr Konto nicht löschen'
+        });
+      }
+    }
+
+    // Firebase User löschen (nur bei Selbstlöschung)
+    if (isSelfDelete) {
+      try {
+        await admin.auth().deleteUser(userToDelete.firebaseUid);
+        console.log('✅ Firebase User gelöscht:', userToDelete.firebaseUid);
+      } catch (firebaseError) {
+        console.error('❌ Fehler beim Löschen des Firebase Users:', firebaseError);
+        // Firebase-Fehler nicht blockierend, da User eventuell bereits gelöscht
+      }
+    }
+
+    // User aus der Datenbank löschen
+    await User.findByIdAndDelete(userId);
+    console.log('✅ User aus Datenbank gelöscht:', userId);
+
+    res.json({
+      success: true,
+      message: isSelfDelete ? 'Konto erfolgreich gelöscht' : 'Benutzer erfolgreich gelöscht'
+    });
+
   } catch (error) {
-    console.error('Error deleting user:', error);
-    res.status(500).send('Internal Server Error');
+    console.error('❌ Fehler beim Löschen des Benutzers:', error);
+    res.status(500).json({ error: 'Serverfehler beim Löschen des Benutzers' });
   }
 });
 

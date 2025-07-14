@@ -1,6 +1,7 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { Product } from '../models/product.model';
 import { getDB } from '../db/mongo';
+import { authenticate } from '../middleware/authenticate';
 
 const router = Router();
 
@@ -59,13 +60,25 @@ router.get('/:id', async (req: Request, res: Response) => {
   }
 });
 
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', authenticate, async (req, res) => {
+  const { role } = (req as any).user;
+  if (role !== 'admin') {
+    res.status(403).json({ message: 'Zugriff verweigert' });
+    return;
+  }
+
   const product = req.body;
   await getDB().collection('products').insertOne(product);
   res.status(201).json(product);
 });
 
-router.put('/:id', async (req: Request, res: Response) => {
+router.put('/:id', authenticate, async (req, res) => {
+  const { role } = (req as any).user;
+  if (role !== 'admin') {
+    res.status(403).json({ message: 'Zugriff verweigert' });
+    return;
+  }
+
   const id = parseInt(req.params.id);
   const updatedProduct = req.body;
 
@@ -93,7 +106,13 @@ router.put('/:id', async (req: Request, res: Response) => {
   }
 });
 
-router.delete('/:id', async (req: Request, res: Response) => {
+router.delete('/:id', authenticate, async (req, res) => {
+  const { role } = (req as any).user;
+  if (role !== 'admin') {
+    res.status(403).json({ message: 'Zugriff verweigert' });
+    return;
+  }
+
   const id = parseInt(req.params.id);
 
   try {
@@ -112,5 +131,43 @@ router.delete('/:id', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Interner Serverfehler' });
   }
 });
+
+router.patch('/:id/stock', async (req, res) => {
+  const secret = req.headers['x-internal-secret'];
+  if (secret !== process.env.INTERNAL_SECRET) {
+    res.status(403).json({ message: 'Zugriff verweigert' });
+  }
+
+  const id = parseInt(req.params.id);
+  const { quantity } = req.body;
+
+  if (typeof quantity !== 'number' || quantity <= 0) {
+    res.status(400).json({ message: 'Ungültige Mengenangabe' });
+  }
+
+  try {
+    const result = await getDB()
+      .collection<Product>('products')
+      .updateOne(
+        { id: id, stock: { $gte: quantity } }, // Nur aktualisieren, wenn Bestand ausreicht
+        { $inc: { stock: -quantity } }         // Bestand atomar verringern
+      );
+
+    if (result.matchedCount === 0) {
+      const product = await getDB().collection<Product>('products').findOne({ id: id });
+      if (!product) {
+        res.status(404).json({ error: 'Produkt nicht gefunden' });
+      } else {
+        res.status(409).json({ error: 'Nicht genügend Lagerbestand' });
+      }
+    }
+
+    res.status(200).json({ message: 'Lagerbestand erfolgreich aktualisiert' });
+  } catch (error) {
+    console.error('Fehler beim Aktualisieren des Lagerbestands:', error);
+    res.status(500).json({ error: 'Interner Serverfehler' });
+  }
+});
+
 
 export default router;

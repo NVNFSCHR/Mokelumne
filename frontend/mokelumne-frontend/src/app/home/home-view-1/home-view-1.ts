@@ -24,6 +24,7 @@ export class HomeView1 implements OnChanges {
   protected description?: string;
   protected price?: number;
   protected imageUrl?: string;
+  protected stock: number = 0;
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['product'] && this.product) {
@@ -31,6 +32,7 @@ export class HomeView1 implements OnChanges {
       this.subtitle = this.product.subtitle;
       this.description = this.product.description;
       this.price = this.product.price;
+      this.stock = this.product.stock || 0;
       this.imageUrl = "/api/images/" + this.product?.images?.[0];
     }
   }

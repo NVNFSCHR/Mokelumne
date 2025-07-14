@@ -18,6 +18,26 @@ router.post('/', async (req, res) => {
     couponCode
   } = req.body;
 
+  async function updateStock(products: { productId: string; quantity: number }[]): Promise<void> {
+        for (const item of products) {
+          const response = await axios.patch(`http://product-service.mokelumne.svc.cluster.local:3000/api/products/${item.productId}/stock`,
+            { quantity: item.quantity },
+            {
+              headers: {
+                'x-internal-secret': process.env.INTERNAL_SECRET
+              }
+            }
+          );
+
+          if (response.status !== 200) {
+            // Wirft einen Fehler, wenn der Bestand nicht aktualisiert werden konnte
+            throw new Error(`Lagerbestand für Produkt ${item.productId} konnte nicht aktualisiert werden: ${response.data.error}`);
+          }
+        }
+      }
+
+  await updateStock(products);
+
   async function calculateTotal(products: { productId: string; quantity: number }[]): Promise<number> {
     let total = 0;
 
@@ -184,10 +204,10 @@ router.patch('/:id/status', authenticate, async (req, res) => {
 // Zahlungsstatus aktualisieren (Webhook/Admin)
 router.patch('/:id/payment', authenticate, async (req, res) => {
   const { role } = (req as any).user;
-  const secret = req.headers['x-webhook-secret'];
+  const secret = req.headers['x-internal-secret'];
 
   // Erlaube Zugriff für Admins oder über einen sicheren Webhook
-  if (role !== 'admin' && secret !== process.env.WEBHOOK_SECRET) {
+  if (role !== 'admin' && secret !== process.env.INTERNAL_SECRET) {
     return res.status(403).send('Forbidden: Invalid credentials or webhook secret');
   }
 

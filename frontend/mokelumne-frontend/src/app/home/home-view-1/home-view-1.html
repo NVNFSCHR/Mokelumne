@@ -7,7 +7,9 @@
 
     <div class="info-btn-container">
       <button class="info-btn" (click)="navigateToProduct()">Mehr erfahren</button>
+      @if (stock > 0) {
       <button class="buy-btn" (click)="addToCart()">Jetzt kaufen</button>
+      }
     </div>
 
   </div>

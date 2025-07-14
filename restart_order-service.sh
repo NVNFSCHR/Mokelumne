@@ -1,7 +1,7 @@
 #!/bin/bash
 
-docker build -t order-service:latest ./services/order-service
+docker build -t payment-service:latest ./services/payment-service
 
-kind load docker-image order-service:latest --name mokelumne-cluster
+kind load docker-image payment-service:latest --name mokelumne-cluster
 
-kubectl rollout restart deployment order-service -n mokelumne
+kubectl rollout restart deployment payment-service -n mokelumne

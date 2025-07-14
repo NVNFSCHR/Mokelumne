@@ -27,6 +27,11 @@ spec:
               secretKeyRef:
                 name: webhook-secret
                 key: WEBHOOK_SECRET
+          - name: INTERNAL_SECRET # Hinzugefügter Secret-Verweis
+            valueFrom:
+              secretKeyRef:
+                name: internal-secret # Name des erstellten Secrets
+                key: INTERNAL_SECRET
         envFrom:
           - secretRef:
               name: firebase-secret

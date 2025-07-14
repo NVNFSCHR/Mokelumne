@@ -27,6 +27,9 @@ spec:
         volumeMounts:
         - name: uploads
           mountPath: /app/uploads
+        envFrom:
+          - secretRef:
+              name: firebase-secret
       volumes:
       - name: uploads
         persistentVolumeClaim:

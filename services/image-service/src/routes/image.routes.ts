@@ -4,11 +4,18 @@ import path from 'path';
 import fs from 'fs';
 import { mongo } from '../db/mongo';
 import { ObjectId } from 'mongodb';
+import { authenticate } from '../middleware/authenticate';
 
 const router = express.Router();
 const upload = multer({ dest: 'uploads/' });
 
-router.post('/upload', upload.single('image'), (req, res, next) => {
+router.post('/upload', authenticate, upload.single('image'), (req, res, next) => {
+  const { role } = (req as any).user;
+  if (role !== 'admin') {
+    res.status(403).json({ message: 'Zugriff verweigert' });
+    return;
+  }
+
   (async () => {
     if (!req.file) return res.status(400).send('No file uploaded');
 
