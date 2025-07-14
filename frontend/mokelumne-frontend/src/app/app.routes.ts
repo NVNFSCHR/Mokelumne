@@ -20,14 +20,14 @@ import { adminGuard } from './admin-guard';
 
 
 export const routes: Routes = [
-  { path: '', component: Home },
-  { path: 'product/:id', component: ProductOverview},
-  { path: 'discover', component: AllProducts },
-  { path: 'cart', component: Cart},
-  { path: 'check-out', component: CheckOut },
-  { path: 'about-us', component: AboutUs },
+  { path: '', component: Home, canActivate: [authGuard] },
+  { path: 'product/:id', component: ProductOverview, canActivate: [authGuard] },
+  { path: 'discover', component: AllProducts, canActivate: [authGuard] },
+  { path: 'cart', component: Cart, canActivate: [authGuard] },
+  { path: 'check-out', component: CheckOut, canActivate: [authGuard] },
+  { path: 'about-us', component: AboutUs, canActivate: [authGuard] },
   { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
+  { path: 'register', component: RegisterComponent, canActivate: [authGuard] },
   { path: 'profile', component: Profile, canActivate: [authGuard] },
   { path: 'settings', component: ProfileSettings, canActivate: [authGuard] },
   { path: 'manage', component: AdminPanelComponent, canActivate: [adminGuard] },
