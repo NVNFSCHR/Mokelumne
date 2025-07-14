@@ -1,4 +1,4 @@
-<div class="home-view-1-container" [style.backgroundImage]="'url(' + imageUrl + ')'">
+<div class="home-view-2-container" [style.backgroundImage]="'url(' + imageUrl + ')'">
 
   <div class="product-info">
 
@@ -7,7 +7,9 @@
 
     <div class="info-btn-container">
       <button class="info-btn" (click)="navigateToProduct()">Mehr erfahren</button>
+      @if (stock > 0) {
       <button class="buy-btn" (click)="addToCart()">Jetzt kaufen</button>
+      }
     </div>
 
   </div>
