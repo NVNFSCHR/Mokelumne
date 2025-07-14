@@ -38,6 +38,8 @@ testem.log
 /typings
 /services/user-service/serviceAccountKey.json
 /k8s/secrets/firebase-secret.yaml
+/restart_frontend.sh
+/restart_order-service.sh
 
 # System files
 .DS_Store
